@@ -1,0 +1,11 @@
+{
+  "name": "Type Scala",
+  "id": "1000000000000000001",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["https://fonts.googleapis.com", "https://fonts.gstatic.com"]
+  }
+}

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Type Scala</title>
+<style>
+  :root {
+    --bg:      #1e1e1e;
+    --surface: #2c2c2c;
+    --border:  #3a3a3a;
+    --hover:   #383838;
+    --text:    #e8e8e8;
+    --muted:   #888;
+    --accent:  #a78bfa;
+    --accentH: #8b5cf6;
+    --green:   #4ade80;
+    --red:     #f87171;
+    --r:       6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    background: var(--bg); color: var(--text); font-size: 13px; padding: 16px;
+  }
+  header {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  }
+  .logo { font-size: 17px; font-weight: 700; letter-spacing: -0.5px; color: var(--accent); }
+  .tagline { font-size: 11px; color: var(--muted); }
+
+  .field { margin-bottom: 11px; }
+  label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; color: var(--muted); margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .note { font-size: 10px; color: #555; text-transform: none; letter-spacing: 0; }
+
+  input[type=number], input[type=text] {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); color: var(--text); font-size: 13px;
+    padding: 7px 10px; outline: none; transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--accent); }
+
+  .row { display: flex; gap: 10px; }
+  .row .field { flex: 1; }
+
+  .sel-wrap { position: relative; }
+  .sel-wrap::after {
+    content: '▾'; position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 11px;
+  }
+  select {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); color: var(--text); font-size: 13px;
+    padding: 7px 28px 7px 10px; outline: none; -webkit-appearance: none; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* ── Font picker ── */
+  .fp { position: relative; }
+
+  .fp-trigger {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 7px 10px; cursor: pointer;
+    user-select: none; transition: border-color 0.15s;
+  }
+  .fp-trigger:hover, .fp-trigger.open { border-color: var(--accent); }
+  .fp-trigger-name { font-size: 13px; flex: 1; }
+  .fp-arrow { color: var(--muted); font-size: 11px; }
+
+  .fp-panel {
+    display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px);
+    background: #252525; border: 1px solid var(--border); border-radius: var(--r);
+    z-index: 99; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  }
+  .fp-panel.open { display: block; }
+
+  .fp-search {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 10px; border-bottom: 1px solid var(--border);
+  }
+  .fp-search-icon { color: var(--muted); font-size: 14px; }
+  .fp-search input {
+    flex: 1; background: transparent; border: none;
+    color: var(--text); font-size: 13px; padding: 0; outline: none;
+  }
+  .fp-search-clear {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 12px; padding: 0; line-height: 1; display: none;
+  }
+  .fp-search-clear.show { display: block; }
+  .fp-search-clear:hover { color: var(--text); }
+
+  .fp-list {
+    max-height: 200px; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+  .fp-list::-webkit-scrollbar { width: 4px; }
+  .fp-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .fp-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; cursor: pointer; font-size: 14px; transition: background 0.1s;
+  }
+  .fp-item:hover { background: var(--hover); }
+  .fp-item.active { color: var(--accent); }
+  .fp-check { width: 14px; font-size: 11px; color: var(--accent); flex-shrink: 0; }
+  .fp-empty { padding: 14px; text-align: center; color: var(--muted); font-size: 12px; }
+  /* ────────────── */
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px; cursor: pointer;
+  }
+  .toggle-row input[type=checkbox] {
+    width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer;
+  }
+  .toggle-label { font-size: 12px; color: var(--muted); }
+
+  .preview {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden; margin-bottom: 14px;
+  }
+  .ph {
+    display: grid; grid-template-columns: 52px 1fr 52px;
+    padding: 6px 12px; background: var(--border);
+    font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .ph span:last-child { text-align: right; }
+  .pr {
+    display: grid; grid-template-columns: 52px 1fr 52px;
+    padding: 5px 12px; border-top: 1px solid var(--border); align-items: center;
+  }
+  .pr-name { font-weight: 500; font-size: 12px; }
+  .pr-bar-wrap { padding: 0 10px; }
+  .pr-bar { height: 4px; background: var(--accent); border-radius: 2px; opacity: 0.6; }
+  .pr-size { text-align: right; color: var(--accent); font-variant-numeric: tabular-nums; font-size: 12px; }
+
+  #gen {
+    width: 100%; padding: 10px; background: var(--accent); color: #fff;
+    border: none; border-radius: var(--r); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s; letter-spacing: 0.2px;
+  }
+  #gen:hover { background: var(--accentH); }
+  #gen:disabled { opacity: 0.5; cursor: default; }
+
+  .banner {
+    display: none; border-radius: var(--r); padding: 10px 12px; margin-top: 10px; font-size: 12px;
+  }
+  .banner.ok  { display: block; background: #1a2e1a; border: 1px solid #2d4d2d; color: var(--green); }
+  .banner.err { display: block; background: #2e1a1a; border: 1px solid #4d2d2d; color: var(--red); }
+  .banner-title { font-weight: 600; margin-bottom: 6px; }
+  .banner-item { padding: 2px 0; color: var(--muted); }
+  .banner-item span { color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Type Scala</div>
+  <div class="tagline">Typography scale generator</div>
+</header>
+
+<div class="row">
+  <div class="field">
+    <label>Base Size (px)</label>
+    <input type="number" id="base" value="16" min="1" max="128" step="1">
+  </div>
+  <div class="field">
+    <label>Ratio</label>
+    <input type="number" id="ratio" value="1.25" min="1.01" max="3" step="0.001">
+  </div>
+</div>
+
+<div class="field">
+  <label>Preset</label>
+  <div class="sel-wrap">
+    <select id="preset">
+      <option value="">— pick a preset —</option>
+      <option value="1.2">Minor Third · 1.200</option>
+      <option value="1.25" selected>Major Third · 1.250</option>
+      <option value="1.333">Perfect Fourth · 1.333</option>
+      <option value="1.5">Perfect Fifth · 1.500</option>
+      <option value="1.618">Golden Ratio · 1.618</option>
+    </select>
+  </div>
+</div>
+
+<div class="field">
+  <label>Typeface <span id="fontStatus" class="note">loading…</span></label>
+  <div class="fp" id="fp">
+    <div class="fp-trigger" id="fpTrigger" role="combobox" aria-haspopup="listbox">
+      <span class="fp-trigger-name" id="fpName">Inter</span>
+      <span class="fp-arrow">▾</span>
+    </div>
+    <div class="fp-panel" id="fpPanel" role="listbox">
+      <div class="fp-search">
+        <span class="fp-search-icon">⌕</span>
+        <input type="text" id="fpSearch" placeholder="Search fonts…" autocomplete="off">
+        <button class="fp-search-clear" id="fpClear" tabindex="-1">✕</button>
+      </div>
+      <div class="fp-list" id="fpList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="field">
+  <label>Group prefix <span class="note">(optional)</span></label>
+  <input type="text" id="prefix" placeholder="e.g. Typography">
+</div>
+
+<label class="toggle-row">
+  <input type="checkbox" id="doFrame" checked>
+  <span class="toggle-label">Create showcase frame on canvas</span>
+</label>
+
+<div class="preview">
+  <div class="ph"><span>Style</span><span></span><span>Size</span></div>
+  <div id="previewRows"></div>
+</div>
+
+<button id="gen">Generate Text Styles</button>
+
+<div class="banner" id="banner">
+  <div class="banner-title" id="bannerTitle"></div>
+  <div id="bannerBody"></div>
+</div>
+
+<script>
+'use strict';
+
+/* ── constants ─────────────────────────────────── */
+const LEVELS = [
+  { name:'H1', step:5 }, { name:'H2', step:4 }, { name:'H3', step:3 },
+  { name:'H4', step:2 }, { name:'H5', step:1 }, { name:'Body', step:0 },
+  { name:'Small', step:-1 }, { name:'Caption', step:-2 },
+];
+
+/* ── state ─────────────────────────────────────── */
+let allFamilies  = [];
+let selectedFont = 'Inter';
+
+/* ── refs ──────────────────────────────────────── */
+const $base        = document.getElementById('base');
+const $ratio       = document.getElementById('ratio');
+const $preset      = document.getElementById('preset');
+const $prefix      = document.getElementById('prefix');
+const $doFrame     = document.getElementById('doFrame');
+const $gen         = document.getElementById('gen');
+const $previewRows = document.getElementById('previewRows');
+const $banner      = document.getElementById('banner');
+const $bannerTitle = document.getElementById('bannerTitle');
+const $bannerBody  = document.getElementById('bannerBody');
+const $fontStatus  = document.getElementById('fontStatus');
+const $fp          = document.getElementById('fp');
+const $fpTrigger   = document.getElementById('fpTrigger');
+const $fpName      = document.getElementById('fpName');
+const $fpPanel     = document.getElementById('fpPanel');
+const $fpSearch    = document.getElementById('fpSearch');
+const $fpClear     = document.getElementById('fpClear');
+const $fpList      = document.getElementById('fpList');
+
+/* ── Google Fonts lazy loader ──────────────────── */
+const _loaded = new Set();
+function loadGFont(family) {
+  if (_loaded.has(family)) return;
+  _loaded.add(family);
+  const l = document.createElement('link');
+  l.rel   = 'stylesheet';
+  l.href  = 'https://fonts.googleapis.com/css2?family=' + encodeURIComponent(family) + '&display=swap';
+  document.head.appendChild(l);
+}
+
+function loadVisible() {
+  // Guard: panel closed → clientHeight is 0, would load every font. Skip.
+  if (!$fpPanel.classList.contains('open') || !$fpList.clientHeight) return;
+  const bottom = $fpList.scrollTop + $fpList.clientHeight + 160;
+  $fpList.querySelectorAll('.fp-item').forEach(el => {
+    if (el.offsetTop < bottom) loadGFont(el.dataset.f);
+  });
+}
+
+// rAF-throttle scroll so fast scrolling doesn't fire dozens of loads
+let scrollPending = false;
+$fpList.addEventListener('scroll', () => {
+  if (scrollPending) return;
+  scrollPending = true;
+  requestAnimationFrame(() => { scrollPending = false; loadVisible(); });
+}, { passive: true });
+
+/* ── Font picker ───────────────────────────────── */
+function renderList(q) {
+  const lq  = (q || '').toLowerCase();
+  const arr = lq ? allFamilies.filter(f => f.toLowerCase().includes(lq)) : allFamilies;
+
+  if (!arr.length) {
+    $fpList.innerHTML = '<div class="fp-empty">No fonts found</div>';
+    return;
+  }
+
+  $fpList.innerHTML = arr.map(f => {
+    const active = f === selectedFont;
+    return `<div class="fp-item${active ? ' active' : ''}" data-f="${f}" role="option">` +
+           `<span class="fp-check">${active ? '✓' : ''}</span>${f}</div>`;
+  }).join('');
+
+  $fpList.querySelectorAll('.fp-item').forEach(el => {
+    el.style.fontFamily = "'" + el.dataset.f + "', sans-serif";
+  });
+
+  // Defer font loading until after layout — otherwise clientHeight may be 0
+  requestAnimationFrame(loadVisible);
+
+  const sel = $fpList.querySelector('.active');
+  if (sel) sel.scrollIntoView({ block: 'nearest' });
+}
+
+function openPicker() {
+  $fpPanel.classList.add('open');
+  $fpTrigger.classList.add('open');
+  $fpSearch.value = '';
+  $fpClear.classList.remove('show');
+  renderList('');
+  $fpSearch.focus();
+  // Wait for layout, THEN load visible fonts and scroll active into view
+  requestAnimationFrame(() => {
+    const sel = $fpList.querySelector('.active');
+    if (sel) sel.scrollIntoView({ block: 'center' });
+    loadVisible();
+  });
+}
+
+function closePicker() {
+  $fpPanel.classList.remove('open');
+  $fpTrigger.classList.remove('open');
+}
+
+function pickFont(family) {
+  selectedFont   = family;
+  $fpName.textContent = family;
+  closePicker();
+}
+
+$fpTrigger.addEventListener('click', e => {
+  e.stopPropagation();
+  $fpPanel.classList.contains('open') ? closePicker() : openPicker();
+});
+
+// Debounce search — avoids re-rendering + font-loading on every keystroke
+let searchTimer = null;
+$fpSearch.addEventListener('input', () => {
+  const q = $fpSearch.value;
+  $fpClear.classList.toggle('show', q.length > 0);
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => renderList(q), 120);
+});
+
+$fpClear.addEventListener('click', e => {
+  e.stopPropagation();
+  $fpSearch.value = '';
+  $fpClear.classList.remove('show');
+  renderList('');
+  $fpSearch.focus();
+});
+
+$fpList.addEventListener('click', e => {
+  const item = e.target.closest('.fp-item');
+  if (item) pickFont(item.dataset.f);
+});
+
+document.addEventListener('click', e => {
+  if (!$fp.contains(e.target)) closePicker();
+});
+
+/* ── Scale preview ─────────────────────────────── */
+function calcScale() {
+  const base  = parseFloat($base.value)  || 16;
+  const ratio = parseFloat($ratio.value) || 1.25;
+  return LEVELS.map(l => ({
+    name: l.name,
+    size: Math.round(base * Math.pow(ratio, l.step) * 10) / 10,
+  }));
+}
+
+function renderPreview() {
+  const s = calcScale(), max = s[0].size;
+  $previewRows.innerHTML = s.map(r =>
+    `<div class="pr">` +
+    `<span class="pr-name">${r.name}</span>` +
+    `<span class="pr-bar-wrap"><div class="pr-bar" style="width:${Math.round(r.size/max*100)}%"></div></span>` +
+    `<span class="pr-size">${r.size}px</span>` +
+    `</div>`
+  ).join('');
+}
+
+$preset.addEventListener('change', () => {
+  if ($preset.value) $ratio.value = $preset.value;
+  renderPreview();
+});
+[$base, $ratio].forEach(el => el.addEventListener('input', renderPreview));
+
+/* ── Generate ──────────────────────────────────── */
+$gen.addEventListener('click', () => {
+  $banner.className = 'banner';
+  $gen.disabled     = true;
+  $gen.textContent  = 'Generating…';
+
+  parent.postMessage({ pluginMessage: {
+    type:        'generate',
+    baseSize:    parseFloat($base.value)  || 16,
+    ratio:       parseFloat($ratio.value) || 1.25,
+    prefix:      $prefix.value.trim(),
+    fontFamily:  selectedFont,
+    createFrame: $doFrame.checked,
+  }}, '*');
+});
+
+/* ── Plugin → UI messages ──────────────────────── */
+window.onmessage = e => {
+  const msg = e.data.pluginMessage;
+  if (!msg) return;
+
+  if (msg.type === 'fonts') {
+    allFamilies = msg.families;
+    $fontStatus.textContent = allFamilies.length + ' fonts';
+    if (!allFamilies.includes(selectedFont) && allFamilies.length) {
+      pickFont(allFamilies[0]);
+    }
+    return;
+  }
+
+  $gen.disabled    = false;
+  $gen.textContent = 'Generate Text Styles';
+
+  if (msg.type === 'done') {
+    $banner.className    = 'banner ok';
+    $bannerTitle.textContent = msg.styles.length + ' styles created ✓';
+    $bannerBody.innerHTML = msg.styles.map(s =>
+      `<div class="banner-item">${s.name} — <span>${s.size}px</span></div>`
+    ).join('');
+  }
+
+  if (msg.type === 'error') {
+    $banner.className    = 'banner err';
+    $bannerTitle.textContent = 'Error';
+    $bannerBody.innerHTML = `<div class="banner-item">${msg.message}</div>`;
+  }
+};
+
+/* ── Init ──────────────────────────────────────── */
+renderPreview();
+</script>
+</body>
+</html>
