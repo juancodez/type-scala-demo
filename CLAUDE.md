@@ -30,16 +30,18 @@ Type-skala-Demo/
 
 ## Scale Levels
 
-| Style   | Step | Example (base=16, ratio=1.25) |
-|---------|------|-------------------------------|
-| H1      | +5   | 48.8px                        |
-| H2      | +4   | 39.1px                        |
-| H3      | +3   | 31.3px                        |
-| H4      | +2   | 25px                          |
-| H5      | +1   | 20px                          |
-| Body    |  0   | 16px                          |
-| Small   | -1   | 12.8px                        |
-| Caption | -2   | 10.2px                        |
+| Style   | Step  | Example (base=16, ratio=1.25) |
+|---------|-------|-------------------------------|
+| H1      | +5    | 48.8px                        |
+| H2      | +4    | 39.1px                        |
+| H3      | +3    | 31.3px                        |
+| H4      | +2    | 25px                          |
+| H5      | +1    | 20px                          |
+| H6      | +0.5  | 17.9px                        |
+| Body    |  0    | 16px                          |
+| Label   | −0.5  | 14.3px                        |
+| Small   | −1    | 12.8px                        |
+| Caption | −2    | 10.2px                        |
 
 ## Build Log
 

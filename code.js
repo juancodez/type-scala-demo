@@ -6,7 +6,9 @@ const LEVELS = [
   { name: 'H3',      step:  3 },
   { name: 'H4',      step:  2 },
   { name: 'H5',      step:  1 },
+  { name: 'H6',      step:  0.5 },
   { name: 'Body',    step:  0 },
+  { name: 'Label',   step: -0.5 },
   { name: 'Small',   step: -1 },
   { name: 'Caption', step: -2 },
 ];
@@ -16,8 +18,10 @@ const SAMPLE = {
   H2:      'Section Heading',
   H3:      'Sub-section Title',
   H4:      'Card Title',
-  H5:      'Label',
+  H5:      'Minor Heading',
+  H6:      'Sub-heading',
   Body:    'The quick brown fox jumps over the lazy dog.',
+  Label:   'Form label · tag · badge',
   Small:   'Supporting text and helper labels.',
   Caption: 'Metadata · caption · timestamp',
 };
