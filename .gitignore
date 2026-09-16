@@ -1,4 +1,6 @@
-*.png
 *.jpg
 node_modules/
 .DS_Store
+bun.lock
+package.json
+make-icons.mjs
