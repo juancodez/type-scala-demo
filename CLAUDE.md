@@ -13,20 +13,21 @@ Body = step 0 (= base). Headings scale up, Small/Caption scale down.
 
 ```
 Type-skala-Demo/
-├── manifest.json   plugin metadata (no documentAccess needed)
+├── manifest.json   plugin metadata
 ├── code.js         plugin thread — Figma API, createTextStyle loop
 ├── ui.html         UI thread — inputs, live preview, generate button
 ├── CLAUDE.md       this file
-├── icon-32.png     (user will supply)
-└── icon-128.png    (user will supply)
+├── icon-32.png
+└── icon-128.png
 ```
 
 ## Stack
 
 - Plain JS + single HTML file, no build step, no npm
 - Figma Plugin API v1.0.0
-- No `documentAccess: "dynamic-page"` (not reading nodes by ID — just creating styles)
-- No external CDN (lesson from Exlo rejection: inline everything)
+- `documentAccess: "dynamic-page"` required to read/write text styles
+- `networkAccess` allows `fonts.googleapis.com` + `fonts.gstatic.com` for font preview
+- No external CDN in ui.html (lesson from Exlo rejection: inline everything)
 
 ## Scale Levels
 
@@ -59,6 +60,20 @@ Type-skala-Demo/
 | 2026-09-11 | ~5 min   | v10: instant typeface menu — cache families in figma.clientStorage; 2nd+ opens paint the list immediately, fresh list overwrites in background |
 | 2026-09-11 | ~15 min  | v11: HANDOFF.md + PUBLISH.md written — session restart context + Community submission checklist |
 | 2026-09-11 | ~10 min  | v12: COOK.md — per-phase time breakdown, activity split, lessons for next plugin |
+| 2026-09-23 | —        | v13: published to Figma Community — real plugin ID `1684309594972462121` added to manifest |
+| 2026-09-23 | —        | v14 fix: `documentAccess: "dynamic-page"` added to manifest; all sync doc APIs replaced with async (see Bug below) |
+
+## Bug: "Cannot call getLocalTextStyles with documentAccess dynamic-page"
+
+**Error:** `Cannot call getLocalTextStyles with documentAccess dynamic-page. Use figma.getLocalTextStylesAsync instead.`
+
+**Cause:** Once `documentAccess: "dynamic-page"` is set in `manifest.json`, Figma forbids all synchronous document APIs. In dynamic-page mode Figma loads pages on demand, so document data isn't guaranteed to be in memory — sync calls assume it is.
+
+**Fix:** Replace every sync document call with its async counterpart:
+- `figma.getLocalTextStyles()` → `await figma.getLocalTextStylesAsync()`
+- sync `textStyleId` setter → async version
+
+**Rule:** If you add `documentAccess: "dynamic-page"`, audit every Figma API call for a sync version and replace it. The error message tells you exactly which one to fix.
 
 ## Decisions
 
@@ -76,10 +91,11 @@ Type-skala-Demo/
 
 ## Pre-publish Checklist
 
-- [ ] Replace `manifest.json` plugin ID (get from figma.com/plugin/create)
-- [ ] Add `icon-32.png` and `icon-128.png`
+- [x] Plugin ID set: `1684309594972462121`
+- [x] `icon-32.png` and `icon-128.png` added
+- [x] `documentAccess: "dynamic-page"` in manifest
+- [x] All sync doc APIs replaced with async versions
 - [ ] Verify no CDN/external script tags in ui.html
 - [ ] Save ui.html with explicit UTF-8 encoding
 - [ ] Test locally: console shows no errors
 - [ ] Upsert test: run twice, confirm no duplicate styles
-- [ ] Publish via Figma Community + add description + screenshots
