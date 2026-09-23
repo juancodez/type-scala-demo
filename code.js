@@ -143,7 +143,7 @@ figma.ui.onmessage = async (msg) => {
         t.fontName    = { family, style: fontStyle };
         t.characters  = SAMPLE[item.levelName] || item.levelName;
         // Apply the style — this overrides individual fontSize
-        t.textStyleId = item.styleId;
+        await t.setTextStyleIdAsync(item.styleId);
         frame.appendChild(t);
       }
 
