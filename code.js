@@ -96,7 +96,7 @@ figma.ui.onmessage = async (msg) => {
     console.log('[TypeScala] loaded', family, fontStyle);
 
     // 1. Create / update text styles
-    const existing = figma.getLocalTextStyles();
+    const existing = await figma.getLocalTextStylesAsync();
     console.log('[TypeScala] existing local text styles:', existing.length);
     const created  = [];
 
